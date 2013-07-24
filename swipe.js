@@ -34,6 +34,8 @@ function Swipe(container, options) {
   var bulletClass = options.bulletClass || 'swipe-bullet';
   var activeBulletClass = options.bulletActiveClass || 'active';
   var index = parseInt(options.startSlide, 10) || 0;
+  var position = index;
+  var clonedSlides = false;
   var speed = options.speed || 300;
   options.continuous = options.continuous !== undefined ? options.continuous : true;
 
@@ -103,6 +105,7 @@ function Swipe(container, options) {
       element.appendChild(slides[0].cloneNode(true));
       element.appendChild(element.children[1].cloneNode(true));
       slides = element.children;
+      clonedSlides = true;
     }
 
     // create an array to store current positions of each slide
@@ -170,7 +173,7 @@ function Swipe(container, options) {
       addClassToElem(childObj[to], "active");
     }
   }
-  
+
   function prev() {
 
     if (options.continuous) slide(index-1);
@@ -196,7 +199,7 @@ function Swipe(container, options) {
 
     // do nothing if already on requested slide
     if (index == to) return;
-    
+
     if (browser.transitions) {
 
       var direction = Math.abs(index-to) / (index-to); // 1: backward, -1: forward
@@ -236,7 +239,8 @@ function Swipe(container, options) {
     // Highlighting the current slide bullet
     hightlightCurrentBullet(index);
 
-    offloadFn(options.callback && options.callback(index, slides[index]));
+    position = clonedSlides ? (index % 2) : index;
+    offloadFn(options.callback && options.callback(position, slides[index]));
   }
 
   function move(index, dist, speed) {
@@ -275,20 +279,20 @@ function Swipe(container, options) {
       return;
 
     }
-    
+
     var start = +new Date;
-    
+
     var timer = setInterval(function() {
 
       var timeElap = +new Date - start;
-      
+
       if (timeElap > speed) {
 
         element.style.left = to + 'px';
 
         if (delay) begin();
 
-        options.transitionEnd && options.transitionEnd.call(event, index, slides[index]);
+        options.transitionEnd && options.transitionEnd.call(event, position, slides[index]);
 
         clearInterval(timer);
         return;
@@ -364,7 +368,7 @@ function Swipe(container, options) {
         time: +new Date
 
       };
-      
+
       // used for testing first move event
       isScrolling = undefined;
 
@@ -399,7 +403,7 @@ function Swipe(container, options) {
       // if user is not trying to scroll vertically
       if (!isScrolling) {
 
-        // prevent native scrolling 
+        // prevent native scrolling
         event.preventDefault();
 
         // stop slideshow
@@ -438,13 +442,13 @@ function Swipe(container, options) {
       var duration = +new Date - start.time;
 
       // determine if slide attempt triggers next/prev slide
-      var isValidSlide = 
+      var isValidSlide =
             Number(duration) < 250               // if slide duration is less than 250ms
             && Math.abs(delta.x) > 20            // and if slide amt is greater than 20px
             || Math.abs(delta.x) > width/2;      // or if slide amt is greater than half the width
 
       // determine if slide attempt is past start and end
-      var isPastBounds = 
+      var isPastBounds =
             !index && delta.x > 0                            // if first slide and slide amt is greater than 0
             || index == slides.length - 1 && delta.x < 0;    // or if last slide and slide amt is less than 0
 
@@ -489,7 +493,8 @@ function Swipe(container, options) {
 
           }
 
-          options.callback && options.callback(index, slides[index]);
+          position = clonedSlides ? (index % 2) : index;
+          options.callback && options.callback(position, slides[index]);
 
         } else {
 
@@ -513,9 +518,9 @@ function Swipe(container, options) {
       // kill touchmove and touchend event listeners until touchstart called again
       element.removeEventListener('touchmove', events, false)
       element.removeEventListener('touchend', events, false)
-      
+
       // we need to highlight the bullet when we swipe the slide, not just on next or prev
-      hightlightCurrentBullet(index); 
+      hightlightCurrentBullet(index);
     },
     transitionEnd: function(event) {
 
@@ -523,7 +528,7 @@ function Swipe(container, options) {
 
         if (delay || options.autoRestart) restart();
 
-        options.transitionEnd && options.transitionEnd.call(event, index, slides[index]);
+        options.transitionEnd && options.transitionEnd.call(event, position, slides[index]);
 
       }
 
@@ -540,50 +545,50 @@ function Swipe(container, options) {
 
   // add event listeners
   if (browser.addEventListener) {
-    
+
 
     // We need to add the listeners on the prev and next buttons if the specific DOM ids were sent when the Swipe object was instantiated
     // We keep them separated because a user might want to add only one button (either next or prev)
     if (options.btnNextId) {
-      
+
       var nextButton = document.getElementById(options.btnNextId);
-      
+
       addEventHandler(nextButton,"click",function(e){
         offloadFn(stop.call());
         offloadFn(next.call());
       });
-    
+
     }
 
     if (options.btnPrevId) {
-      
+
       var prevButton = document.getElementById(options.btnPrevId);
-      
+
       addEventHandler(prevButton,"click",function(e){
         offloadFn(stop.call());
         offloadFn(prev.call());
       });
-    
+
     }
 
     if (options.bulletWrapperId) {
-      
+
       var bulletWrap = document.getElementById(options.bulletWrapperId);
-      
+
       addEventHandler(bulletWrap,"click",function(e){
           if (getTarget(e).innerHTML) {
             var slideNumber = parseInt(getTarget(e).innerHTML);
-            if (!isNaN(slideNumber)) {  
+            if (!isNaN(slideNumber)) {
               offloadFn(stop.call());
               offloadFn(slide(slideNumber));
             }
-          }    
+          }
       });
-    
+
     }
 
-    
-    // set touchstart event on element    
+
+    // set touchstart event on element
     if (browser.touch) element.addEventListener('touchstart', events, false);
 
     if (browser.transitions) {
@@ -611,10 +616,10 @@ function Swipe(container, options) {
 
     },
     slide: function(to, speed) {
-      
+
       // cancel slideshow
       stop();
-      
+
       slide(to, speed);
 
     },
@@ -649,11 +654,11 @@ function Swipe(container, options) {
     getPos: function() {
 
       // return current index position
-      return index;
+      return position;
 
     },
     getNumSlides: function() {
-      
+
       // return total number of slides
       return length;
     },
