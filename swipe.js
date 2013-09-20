@@ -77,7 +77,18 @@ function Swipe(container, options) {
     else if (elem.attachEvent)
       elem.attachEvent ('on'+eventType,handler);
   }
-  
+
+  // get the target of a click event, we need this so we have support for multiple browsers
+  function getTarget(e) {
+    var clickTarget;
+    if (e.target) clickTarget = e.target;
+    else if (e.srcElement) clickTarget = e.srcElement;
+    if (clickTarget.nodeType == 3) // defeat Safari bug
+      clickTarget = clickTarget.parentNode;
+
+    return clickTarget;
+  }
+
   function setup() {
 
     // cache slides
@@ -108,7 +119,7 @@ function Swipe(container, options) {
     if (bulletWrapper != null) {
 
       var bulletWrapperObj = document.getElementById(bulletWrapper);
-      var bulletInc = 1;
+      var bulletInc = 0;
       bulletWrapperObj.innerHTML = '';
 
     }
@@ -554,6 +565,23 @@ function Swipe(container, options) {
       });
     
     }
+
+    if (options.bulletWrapperId) {
+      
+      var bulletWrap = document.getElementById(options.bulletWrapperId);
+      
+      addEventHandler(bulletWrap,"click",function(e){
+          if (getTarget(e).innerHTML) {
+            var slideNumber = parseInt(getTarget(e).innerHTML);
+            if (slideNumber) {  
+              offloadFn(stop.call());
+              offloadFn(slide(slideNumber));
+            }
+          }    
+      });
+    
+    }
+
     
     // set touchstart event on element    
     if (browser.touch) element.addEventListener('touchstart', events, false);
