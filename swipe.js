@@ -555,6 +555,7 @@ function Swipe(container, options) {
       var nextButton = container.querySelector(options.btnNextClass);
 
       addEventHandler(nextButton,"click",function(e){
+        e.preventDefault();
         offloadFn(stop.call());
         offloadFn(next.call());
       });
@@ -566,6 +567,7 @@ function Swipe(container, options) {
       var prevButton = container.querySelector(options.btnPrevClass);
 
       addEventHandler(prevButton,"click",function(e){
+        e.preventDefault();
         offloadFn(stop.call());
         offloadFn(prev.call());
       });
@@ -580,6 +582,7 @@ function Swipe(container, options) {
           if (getTarget(e).innerHTML) {
             var slideNumber = parseInt(getTarget(e).innerHTML);
             if (!isNaN(slideNumber)) {
+              e.preventDefault();
               offloadFn(stop.call());
               offloadFn(slide(slideNumber));
             }
