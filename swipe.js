@@ -156,6 +156,7 @@ function Swipe(container, options) {
     if (!browser.transitions) element.style.left = (index * -width) + 'px';
 
     container.style.visibility = 'visible';
+    container.className = container.className + ' initialised';
 
     // Need to highlight the bullet assigned to the current slide
     // the setup function is called on window resize so we cant highlight the first bullet but the current index
