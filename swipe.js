@@ -30,7 +30,8 @@ function Swipe(container, options) {
   var element = container.children[0];
   var slides, slidePos, width, length;
   options = options || {};
-  var bulletWrapper = options.bulletWrapperId || null;
+  options.bulletWrapperClass = '.' + options.bulletWrapperClass;
+  var bulletWrapper = options.bulletWrapperClass || null;
   var bulletClass = options.bulletClass || 'swipe-bullet';
   var activeBulletClass = options.bulletActiveClass || 'active';
   var index = parseInt(options.startSlide, 10) || 0;
@@ -121,7 +122,7 @@ function Swipe(container, options) {
 
     if (bulletWrapper != null) {
 
-      var bulletWrapperObj = document.getElementById(bulletWrapper);
+      var bulletWrapperObj = container.querySelector(bulletWrapper);
       var bulletInc = 0;
       bulletWrapperObj.innerHTML = '';
 
@@ -164,7 +165,7 @@ function Swipe(container, options) {
   function hightlightCurrentBullet(to){
     if (bulletWrapper){
 
-      var bulletWrapperObj = document.getElementById(bulletWrapper);
+      var bulletWrapperObj = container.querySelector(bulletWrapper);
       var childObj = bulletWrapperObj.childNodes;
 
       for (var i=0;i<childObj.length;i++) {
@@ -549,9 +550,9 @@ function Swipe(container, options) {
 
     // We need to add the listeners on the prev and next buttons if the specific DOM ids were sent when the Swipe object was instantiated
     // We keep them separated because a user might want to add only one button (either next or prev)
-    if (options.btnNextId) {
+    if (options.btnNextClass) {
 
-      var nextButton = document.getElementById(options.btnNextId);
+      var nextButton = container.querySelector(options.btnNextClass);
 
       addEventHandler(nextButton,"click",function(e){
         offloadFn(stop.call());
@@ -560,9 +561,9 @@ function Swipe(container, options) {
 
     }
 
-    if (options.btnPrevId) {
+    if (options.btnPrevClass) {
 
-      var prevButton = document.getElementById(options.btnPrevId);
+      var prevButton = container.querySelector(options.btnPrevClass);
 
       addEventHandler(prevButton,"click",function(e){
         offloadFn(stop.call());
@@ -571,9 +572,9 @@ function Swipe(container, options) {
 
     }
 
-    if (options.bulletWrapperId) {
+    if (options.bulletWrapperClass) {
 
-      var bulletWrap = document.getElementById(options.bulletWrapperId);
+      var bulletWrap = container.querySelector(options.bulletWrapperClass);
 
       addEventHandler(bulletWrap,"click",function(e){
           if (getTarget(e).innerHTML) {
