@@ -30,7 +30,7 @@ function Swipe(container, options) {
   var element = container.children[0];
   var slides, slidePos, width, length;
   options = options || {};
-  options.bulletWrapperClass = '.' + options.bulletWrapperClass;
+  options.bulletWrapperClass = options.bulletWrapperClass ? '.' + options.bulletWrapperClass : '';
   var bulletWrapper = options.bulletWrapperClass || null;
   var bulletClass = options.bulletClass || 'swipe-bullet';
   var activeBulletClass = options.bulletActiveClass || 'active';
