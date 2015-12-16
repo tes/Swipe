@@ -4,7 +4,7 @@
  * Brad Birdsall and Xiuyu Li
  * Copyright 2015, MIT License
  *
-*/
+ */
 
 function Swipe(container, options) {
 
@@ -135,9 +135,11 @@ function Swipe(container, options) {
       slide.style.width = width + 'px';
       slide.setAttribute('data-index', pos);
 
-      if (bulletWrapperObj) {
-        bulletWrapperObj.innerHTML += '<a class="' + bulletClass + '" href="#">' + bulletInc + '</a>';
-        bulletInc++;
+      if (clonedSlides === false || pos <= 1) {
+        if (bulletWrapperObj) {
+          bulletWrapperObj.innerHTML += '<a class="' + bulletClass + '" href="#">' + bulletInc + '</a>';
+          bulletInc++;
+        }
       }
 
       if (browser.transitions) {
@@ -238,10 +240,11 @@ function Swipe(container, options) {
 
     index = to;
 
-    // Highlighting the current slide bullet
-    hightlightCurrentBullet(index);
-
     position = clonedSlides ? (index % 2) : index;
+
+    // Highlighting the current slide bullet
+    hightlightCurrentBullet(position);
+
     offloadFn(options.callback && options.callback(position, slides[index]));
   }
 
@@ -260,15 +263,15 @@ function Swipe(container, options) {
     if (!style) return;
 
     style.webkitTransitionDuration =
-    style.MozTransitionDuration =
-    style.msTransitionDuration =
-    style.OTransitionDuration =
-    style.transitionDuration = speed + 'ms';
+      style.MozTransitionDuration =
+        style.msTransitionDuration =
+          style.OTransitionDuration =
+            style.transitionDuration = speed + 'ms';
 
     style.webkitTransform = 'translate(' + dist + 'px,0)' + 'translateZ(0)';
     style.msTransform =
-    style.MozTransform =
-    style.OTransform = 'translateX(' + dist + 'px)';
+      style.MozTransform =
+        style.OTransform = 'translateX(' + dist + 'px)';
 
   }
 
@@ -422,10 +425,10 @@ function Swipe(container, options) {
 
           delta.x =
             delta.x /
-              ( (!index && delta.x > 0               // if first slide and sliding left
-                || index == slides.length - 1        // or if last slide and sliding right
-                && delta.x < 0                       // and if sliding at all
-              ) ?
+            ( (!index && delta.x > 0               // if first slide and sliding left
+              || index == slides.length - 1        // or if last slide and sliding right
+              && delta.x < 0                       // and if sliding at all
+            ) ?
               ( Math.abs(delta.x) / width + 1 )      // determine resistance level
               : 1 );                                 // no resistance if false
 
@@ -445,14 +448,14 @@ function Swipe(container, options) {
 
       // determine if slide attempt triggers next/prev slide
       var isValidSlide =
-            Number(duration) < 250               // if slide duration is less than 250ms
-            && Math.abs(delta.x) > 20            // and if slide amt is greater than 20px
-            || Math.abs(delta.x) > width/2;      // or if slide amt is greater than half the width
+        Number(duration) < 250               // if slide duration is less than 250ms
+        && Math.abs(delta.x) > 20            // and if slide amt is greater than 20px
+        || Math.abs(delta.x) > width/2;      // or if slide amt is greater than half the width
 
       // determine if slide attempt is past start and end
       var isPastBounds =
-            !index && delta.x > 0                            // if first slide and slide amt is greater than 0
-            || index == slides.length - 1 && delta.x < 0;    // or if last slide and slide amt is less than 0
+        !index && delta.x > 0                            // if first slide and slide amt is greater than 0
+        || index == slides.length - 1 && delta.x < 0;    // or if last slide and slide amt is less than 0
 
       if (options.continuous) isPastBounds = false;
 
@@ -580,14 +583,14 @@ function Swipe(container, options) {
       var bulletWrap = container.querySelector(options.bulletWrapperClass);
 
       addEventHandler(bulletWrap,"click",function(e){
-          if (getTarget(e).innerHTML) {
-            var slideNumber = parseInt(getTarget(e).innerHTML);
-            if (!isNaN(slideNumber)) {
-              e.preventDefault();
-              offloadFn(stop.call());
-              offloadFn(slide(slideNumber));
-            }
+        if (getTarget(e).innerHTML) {
+          var slideNumber = parseInt(getTarget(e).innerHTML);
+          if (!isNaN(slideNumber)) {
+            e.preventDefault();
+            offloadFn(stop.call());
+            offloadFn(slide(slideNumber));
           }
+        }
       });
 
     }
