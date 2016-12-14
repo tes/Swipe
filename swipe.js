@@ -716,20 +716,18 @@ function Swipe(container, options) {
 }
 
 
-(function (factory) {
-  if(typeof module === "object" && typeof module.exports === "object") {
-    factory(require("jquery"), window, document);
-  } else {
-    factory(jQuery, window, document);
-  }
-}(function($, window, document, undefined) {
-  if ( window.jQuery || window.Zepto ) {
-    (function($) {
-      $.fn.Swipe = function(params) {
-        return this.each(function() {
-          $(this).data('Swipe', new Swipe($(this)[0], params));
-        });
-      }
-    })( window.jQuery || window.Zepto )
-  }
-}));
+if ( window.jQuery || window.Zepto ) {
+  (function($) {
+    $.fn.Swipe = function(params) {
+      return this.each(function() {
+        $(this).data('Swipe', new Swipe($(this)[0], params));
+      });
+    }
+  })( window.jQuery || window.Zepto )
+}
+
+if(typeof module === "object" && typeof module.exports === "object") {
+  module.exports = Swipe;
+} else {
+  window.Swipe = Swipe;
+}
