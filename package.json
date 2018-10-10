@@ -1,6 +1,6 @@
 {
   "name": "tes-swipe-js",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "main": "./swipe.js",
   "dependencies": {
     "jquery": "^3.3.1"
